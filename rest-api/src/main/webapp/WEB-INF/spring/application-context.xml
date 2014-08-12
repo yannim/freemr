@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:osgi="http://www.springframework.org/schema/osgi" xmlns:osgix="http://www.springframework.org/schema/osgi-compendium" xmlns:axon="http://www.axonframework.org/schema/core"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:rabbit="http://www.springframework.org/schema/rabbit" xmlns:amqp="http://www.axonframework.org/schema/amqp"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+    http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi-1.2.xsd
+    http://www.axonframework.org/schema/core http://www.axonframework.org/schema/axon-core.xsd
+    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+    http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+		http://www.axonframework.org/schema/amqp http://www.axonframework.org/schema/axon-amqp.xsd">
+
+	<!-- context -->
+	<context:component-scan base-package="com.eits.freemr.configuration.application,com.eits.freemr.configuration.view,com.eits.freemr.configuration.rest.api" />
+	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<array>
+				<value>/WEB-INF/database.properties</value>
+				<value>/WEB-INF/ldap.properties</value>
+				<value>/WEB-INF/jmx.properties</value>
+				<value>/WEB-INF/amqp.properties</value>
+				<value>/WEB-INF/html.properties</value>
+			</array>
+		</property>
+	</bean>
+	
+	<bean id="jolokiaUrl" class="java.lang.String">
+		<constructor-arg value="${jolokia.url}" />
+	</bean>
+	<bean id="restOperations" class="org.springframework.web.client.RestTemplate"/>
+	<bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+
+	<!-- taskExecutor for Adapter and Node definition view -->
+	<task:executor id="adapterAndNodeDefinitionTaskExecutor" pool-size="5" />
+	<task:executor id="multiTenancyTaskExecutor" pool-size="0-2147483647" />
+
+	<bean id="tenantUserIndexHtmlLocation" class="java.lang.String">
+		<constructor-arg value="${application.tenant.user.index.html}" />
+	</bean>
+	<bean id="applicationIndexHtmlLocation" class="java.lang.String">
+		<constructor-arg value="${application.index.html}" />
+	</bean>
+	
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />
+	
+	<!--axon infrastructure -->
+	<axon:command-bus id="commandBus" transaction-manager="transactionManager">
+		<axon:dispatchInterceptors>
+			<bean class="com.eits.freemr.configuration.application.tenantuser.interceptor.TenantUserInterceptor" />
+		</axon:dispatchInterceptors>
+		<axon:handlerInterceptors>
+			<bean id="validationInterceptor" class="org.axonframework.commandhandling.interceptors.BeanValidationInterceptor">
+				<constructor-arg>
+					<bean id="lazyValidatorFactory" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+				</constructor-arg>
+			</bean>
+		</axon:handlerInterceptors>
+	</axon:command-bus>
+
+	<bean id="__axon-annotation-event-listener-bean-post-processor" class="org.axonframework.eventhandling.annotation.AnnotationEventListenerBeanPostProcessor">
+		<property name="eventBus" ref="eventBus" />
+	</bean>
+	
+	<axon:event-bus id="eventBus" />
+	
+	<bean id="identifierFactory" class="org.axonframework.domain.IdentifierFactory" factory-method="getInstance" />
+
+	<axon:snapshotter id="snapshotter" event-store="eventStore" />
+	
+	<axon:jpa-event-store id="eventStore" />
+	
+	<axon:annotation-config command-bus="commandBus" event-bus="eventBus" />
+	
+	<bean id="commandGateway" class="org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean">
+		<property name="commandBus" ref="commandBus" />
+	</bean>
+	
+
+	<!-- rabbitMQ -->
+	<rabbit:topic-exchange name="freemr.domain.topic" />
+	<rabbit:connection-factory id="connectionFactory" host="${rabbitmq.host:localhost}" port="${rabbitmq.port:5672}" username="${rabbitmq.username:guest}"
+		password="${rabbitmq.password:guest}" />
+		
+	<rabbit:admin id="rabbitAdmin" connection-factory="connectionFactory" />
+	
+	<bean id="serializer" class="org.axonframework.serializer.xml.XStreamSerializer"/>
+	
+	<bean id="routingKeyResolver" class="com.eits.freemr.configuration.application.amqp.MetaDataRoutingKeyResolver" />
+	
+	<amqp:terminal id="terminal" connection-factory="connectionFactory" routing-key-resolver="routingKeyResolver" serializer="serializer"
+		exchange-name="freemr.domain.topic" />
+	
+	<bean id="serializerMessageConverter" class="com.eits.freemr.configuration.rest.api.amqp.XStreamConverter">
+		<property name="serializer">
+			<bean class="org.axonframework.serializer.xml.XStreamSerializer" />
+		</property>
+	</bean>
+	
+	
+	<!-- tenant user -->
+	<axon:aggregate-command-handler id="tenantUserCommandHandler" command-bus="commandBus"
+		aggregate-type="com.eits.freemr.configuration.domain.global.TenantUser" repository="esTenantUserRepository" />
+
+	<bean id="tenantUserSnapshotterTrigger" class="org.axonframework.eventsourcing.EventCountSnapshotterTrigger">
+		<property name="snapshotter" ref="snapshotter" />
+	</bean>
+
+	<bean id="tenantUserAggregateFactory" class="org.axonframework.eventsourcing.GenericAggregateFactory">
+		<constructor-arg type="java.lang.Class" value="com.eits.freemr.configuration.domain.global.TenantUser" />
+	</bean>
+
+	<bean id="esTenantUserRepository" class="org.axonframework.eventsourcing.EventSourcingRepository">
+		<constructor-arg index="0" ref="tenantUserAggregateFactory" />
+		<constructor-arg index="1" ref="eventStore" />
+		<property name="snapshotterTrigger" ref="tenantUserSnapshotterTrigger" />
+	</bean>
+
+	<!-- cloud -->
+	<axon:aggregate-command-handler id="cloudCommandHandler" command-bus="commandBus" aggregate-type="com.eits.freemr.configuration.domain.global.Cloud"
+		repository="esCloudRepository" />
+
+	<bean id="cloudSnapshotterTrigger" class="org.axonframework.eventsourcing.EventCountSnapshotterTrigger">
+		<property name="snapshotter" ref="snapshotter" />
+	</bean>
+
+	<bean id="cloudAggregateFactory" class="org.axonframework.eventsourcing.GenericAggregateFactory">
+		<constructor-arg type="java.lang.Class" value="com.eits.freemr.configuration.domain.global.Cloud" />
+	</bean>
+
+	<bean id="esCloudRepository" class="org.axonframework.eventsourcing.EventSourcingRepository">
+		<constructor-arg index="0" ref="cloudAggregateFactory" />
+		<constructor-arg index="1" ref="eventStore" />
+		<property name="snapshotterTrigger" ref="cloudSnapshotterTrigger" />
+	</bean>
+	
+	<!-- tenant -->
+	<axon:aggregate-command-handler id="tenantCommandHandler" command-bus="commandBus" aggregate-type="com.eits.freemr.configuration.domain.tenant.Tenant"
+		repository="esTenantRepository" />
+
+	<bean id="tenantSnapshotterTrigger" class="org.axonframework.eventsourcing.EventCountSnapshotterTrigger">
+		<property name="snapshotter" ref="snapshotter" />
+	</bean>
+
+	<bean id="tenantAggregateFactory" class="org.axonframework.eventsourcing.GenericAggregateFactory">
+		<constructor-arg type="java.lang.Class" value="com.eits.freemr.configuration.domain.tenant.Tenant" />
+	</bean>
+
+	<bean id="esTenantRepository" class="org.axonframework.eventsourcing.EventSourcingRepository">
+		<constructor-arg index="0" ref="tenantAggregateFactory" />
+		<constructor-arg index="1" ref="eventStore" />
+		<property name="snapshotterTrigger" ref="tenantSnapshotterTrigger" />
+	</bean>
+
+</beans>
