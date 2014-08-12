@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>freemr-console</artifactId>
+	<name>Freemr Management Console</name>
+	<groupId>com.eits.freemr</groupId>
+	<packaging>jar</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<parent>
+		<groupId>nl.enovation.angularjs</groupId>
+		<artifactId>angularjs-template-parent</artifactId>
+		<version>1.0.3</version>
+	</parent>
+
+	<distributionManagement>
+		<repository>
+			<id>nexus.oper</id>
+			<name>Internal Releases</name>
+			<url>${repo.oper.enovation.inhouse.url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus.dev</id>
+			<name>Internal Snapshots</name>
+			<url>${repo.enovation.inhouse.snapshot.url}</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<build>
+		<finalName>freemr-management-console</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/client</directory>
+				<targetPath>META-INF/resources/${project.build.finalName}/${project.version}</targetPath>
+				<excludes>
+					<exclude>app/**</exclude>
+					<exclude>common/**</exclude>
+					<exclude>css/**</exclude>
+				</excludes>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-js-dependencies-for-testing</id>
+					</execution>
+					<execution>
+						<id>copy-war-to-target</id>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>ro.isdc.wro4j</groupId>
+				<artifactId>wro4j-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>rpm</id>
+			<activation>
+				<os>
+					<name>Linux</name>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>rpm-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	
+	<properties>
+		<angularjs.version>1.1.4</angularjs.version>
+		<bootstrap.version>2.2.2</bootstrap.version>
+		<jquery.version>1.8.3</jquery.version>
+		<angular-ui.version>0.3.2</angular-ui.version>
+		<momentjs.version>1.7.2</momentjs.version>
+		<font-awesome.version>4.0.0</font-awesome.version>
+		<angular-ui-bootstrap.version>0.3.0</angular-ui-bootstrap.version>
+		<jasny-bootstrap.version>2.3.0-j5</jasny-bootstrap.version>
+		<jquery-form.version>3.28.0-2013.02.06</jquery-form.version>
+        <underscorejs.version>1.4.4</underscorejs.version>
+	</properties>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>angularjs</artifactId>
+			<version>${angularjs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>${bootstrap.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery</artifactId>
+			<version>${jquery.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>angular-ui</artifactId>
+			<version>${angular-ui.version}-1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>momentjs</artifactId>
+			<version>${momentjs.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>font-awesome</artifactId>
+			<version>${font-awesome.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>angular-ui-bootstrap</artifactId>
+			<version>${angular-ui-bootstrap.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery-form</artifactId>
+			<version>${jquery-form.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jasny-bootstrap</artifactId>
+			<version>${jasny-bootstrap.version}</version>
+		</dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>underscorejs</artifactId>
+            <version>${underscorejs.version}</version>
+        </dependency>
+	</dependencies>
+</project>
+

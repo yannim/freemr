@@ -1,0 +1,104 @@
+<div id="main" class="container-fluid" ng-controller="CloudCtrl">
+    <div class="row-fluid">
+        <div class="span12">
+            <select class="pull-left" ng-model="search.archived" ng-init="search.archived='FALSE'">
+                <option value="">ALL</option>
+                <option value="FALSE">Not Archived</option>
+                <option value="TRUE">Archived</option>
+            </select>
+            <a ui-if="search.archived!='TRUE'" class="newCloudBtn btn btn-primary pull-right" ng-click="new(clouds.content)"><i class="icon-plus-sign icon-white"></i> New</a>
+
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="span3">Identifier</th>
+                    <th class="span3">Name</th>
+                    <th class="span3">Tenant</th>
+                    <th class="span1">Enabled</th>
+                    <th class="span2">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- list -->
+                <tr ng-repeat="cloud in clouds.content|filter:search" ng-controller="CloudEditCtrl">
+                    <!-- default -->
+                    <td class="span3" ui-if="!isEditing()">{{cloud.identifier}}</td>
+                    <td class="span3" ui-if="!isEditing()"><a href="#/cloud" tooltip-placement="bottom" tooltip-html-unsafe="{{cloud.description|newLineToBreak}}">{{cloud.name}}</a></td></td>
+                    <td class="span3" ui-if="!isEditing()">{{cloud.tenantName}}</td>
+                    <td class="span1" ui-if="!isEditing()">
+                        <div  ng-switch on="cloud.archived">
+                            <span ng-switch-when="false" class="label label-success"><i class="fa fa-check-circle"></i></span>
+                            <span ng-switch-when="true" class="label label-important"><i class="fa fa-times-circle"></i></span>
+                        </div>
+                    </td>
+                    <td class="span2" ui-if="!isEditing()">
+                        <div ui-if="isUpdating()">
+                            <div class="progress progress-striped active">
+                                <div class="bar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div ui-if="isViewing()&&!cloud.archived">
+                            <button class="editBtn btn btn-primary btn-mini" ng-click="edit()">
+                                <i class="icon-edit icon-white"></i> <span>Edit</span>
+                            </button>
+                            <button class="deleteBtn btn btn-danger btn-mini" ng-click="archive()">
+                                <i class="icon-remove icon-white"></i> <span>Archive</span>
+                            </button>
+                        </div>
+                        <alert ui-if="waitingForDeleteConfirmation()" type="warning" close="cancelArchive()">
+                            <p>Are you sure to archive current cloud?</p>
+
+                            <p>
+                                <a class="confirmDeleteBtn btn btn-danger btn-mini alert-yes" ng-click="submit(clouds.content)"><i class="icon-ok icon-white"></i> Yes</a>
+                            </p>
+                        </alert>
+                        <alert type="error" ui-if="errorMessage" close="clearError()">
+                            <p>{{errorMessage}}</p>
+                        </alert>
+                    </td>
+                    <td class="span8" colspan="4" ui-if="isEditing()">
+                        <form name="form" class="form-horizontal css-form" ng-init="$parent.form=form">
+                            <div class="control-group">
+                                <label class="control-label">Name<span style="color: red;">*</span></label>
+
+                                <div class="controls">
+                                    <input type="text" name="name" maxlength="128" ng-maxlength="128" ng-minlength="1" class="input-block-level" ng-model="l.name" required/>
+
+                                    <div class="help-block">
+                                        <span class="error" ui-if="form.name.$dirty&&!form.name.$valid">The length of cloud name must greater than 0 and less than 128!</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Tenant<span style="color: red;">*</span></label>
+
+                                <div class="controls">
+                                    <select ui-if="!l.identifier" class="tenants" ng-model="l.tenantIdentifier" required
+                                            ng-options="tenant.identifier as tenant.name for tenant in tenants.content">
+                                    </select>
+                                    <span class="uneditable-input" ui-if="l.identifier">{{l.tenantName}}</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Description</label>
+
+                                <div class="controls">
+                                    <textarea name="description" maxlength="1024" class="input-block-level" ng-model="l.description"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                    <td class="span2" ui-if="isEditing()">
+                        <button class="saveEditCloudBtn btn btn-primary btn-mini" ng-click="submit(clouds.content,tenants.content)" ng-disabled="form.$invalid||form.$pristine">
+                            <i class="fa fa-save"></i> <span>Save</span>
+                        </button>
+                        <button class="cancelEditCloudBtn btn btn-danger btn-mini" ng-click="cancel(clouds.content)">
+                            <i class="icon-remove icon-white"></i> <span>Cancel</span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

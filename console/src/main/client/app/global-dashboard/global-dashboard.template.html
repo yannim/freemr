@@ -1,0 +1,45 @@
+<div id="main" class="container-fluid" ng-controller="GlobalDashboardCtrl">
+    <div class="row-fluid">
+        <div class="span12">
+            <h3 class="breadcrumb">Bundle Statuses</h3>
+            <input type="text" class="pull-left"  ng-model="search.name" placeholder="Bundle Name"> <div class="pull-left">&nbsp;</div>
+           <!-- <input type="text" class="pull-left"  ng-model="search.state" placeholder="Bundle State">-->
+            <select class="pull-left" ng-model="search.state" ng-init="search.state=''">
+                <option value="">ALL</option>
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="RESOLVED">RESOLVED</option>
+                <option value="STARTING">STARTING</option>
+                <option value="STOPPING">STOPPING</option>
+                <option value="INSTALLED">INSTALLED</option>
+            </select>
+        </div>
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="span2">Bundle ID</th>
+                    <th class="span2">Name</th>
+                    <th class="span2">Start Level</th>
+                    <th class="span2">State</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="bs in bundleStatuses | orderBy:'id' | filter:search">
+                    <!-- viewing -->
+                    <td class="span2">{{bs.id}}
+                    </td>
+                    <td class="span2">{{bs.name}} ({{bs.version}})
+                    </td>
+                    <td class="span2">{{bs.startLevel}}
+                    </td>
+                    <td class="span2">
+                        <span class="label label-success" ui-if="bs.state==='ACTIVE'">{{bs.state}}</span>
+                        <span class="label label-info" ui-if="bs.state==='RESOLVED'">{{bs.state}}</span>
+                        <span class="label label-default" ui-if="bs.state==='INSTALLED'">{{bs.state}}</span>
+                        <span class="label label-warning" ui-if="bs.state==='STARTING' || bs.state==='STOPPING'">{{bs.state}}</span>
+                    </td>
+                </tbody>
+            </table>
+        </div>
+
+
+</div>

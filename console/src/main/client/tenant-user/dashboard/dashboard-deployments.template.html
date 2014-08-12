@@ -1,0 +1,185 @@
+<div  ng-controller="MonitorTenantDeploymentsCtrl">
+    <h1 class="breadcrumb">Deployments</h1>
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+        <tr>
+            <th class="span2">Name</th>
+            <th class="span2">Workspace</th>
+            <th class="span3">Project</th>
+            <th class="span2">Status</th>
+            <th class="span3">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="deployment in deployments" ng-controller="MonitorTenantDeploymentCtrl">
+            <!-- viewing -->
+            <td class="span2" ui-if="!isDetailing()&&deployment.running">
+                <a href="#/dashboard/deployments/{{deployment.id}}/endpoints">{{deployment.name}}</a></td>
+            <td class="span2" ui-if="!isDetailing()&&!deployment.running">{{deployment.name}}</td>
+            <td class="span2" ui-if="!isDetailing()">{{deployment.workspaceName}}</td>
+            <td class="span3" ui-if="!isDetailing()">{{deployment.projectName}} / {{deployment.projectVersion}}</td>
+            <td class="span2" ui-if="!isDetailing()">
+                <span class="label label-success" ui-if="deployment.running">Active</span>
+                <span class="label label-important" ui-if="!deployment.running">Inactive</span>
+            </td>
+            <!-- Detail -->
+            <td class="span9" colspan="4" ui-if="isDetailing()">
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th colspan="2">Basic Information</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            Deployment Name
+                        </td>
+                        <td>
+                            {{deployment.name}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Project
+                        </td>
+                        <td>
+                            {{deployment.projectName}} / {{deployment.projectVersion}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Workspace
+                        </td>
+                        <td>
+                            {{deployment.workspaceName}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Status
+                        </td>
+                        <td>
+                            <span class="label label-success" ui-if="deployment.running">Active</span>
+                            <span class="label label-important" ui-if="!deployment.running">Inactive</span>
+                        </td>
+                    </tr>
+                </table>
+                <hr/>
+                <table class="table table-bordered table-striped" ui-if="showEndpointTable('INBOUND',deployment.projectEndpoints)">
+                    <thead>
+                    <tr>
+                        <th class="span6">Inbound Endpoint</th>
+                        <th class="span6">Location</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="(name,type) in deployment.projectEndpoints">
+                        <td class="span6" ui-if="type.indexOf('INBOUND')!=-1">
+                            {{name}}
+                        </td>
+                        <td class="span6" ui-if="type.indexOf('INBOUND')!=-1">
+                            {{getLocationName(deployment.endpointLocations[name],locations)}}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered table-striped" ui-if="showEndpointTable('OUTBOUND',deployment.projectEndpoints)">
+                    <thead>
+                    <tr>
+                        <th class="span6">Outbound Endpoint</th>
+                        <th class="span6">Location</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="(name,type) in deployment.projectEndpoints">
+                        <td class="span6" ui-if="type.indexOf('OUTBOUND')!=-1">
+                            {{name}}
+                        </td>
+                        <td class="span6" ui-if="type.indexOf('OUTBOUND')!=-1">
+                            {{getLocationName(deployment.endpointLocations[name],locations)}}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered table-striped" ui-if="showEndpointTable('BIDIRECTIONAL',deployment.projectEndpoints)">
+                    <thead>
+                    <tr>
+                        <th class="span6">Bidirectional Endpoint</th>
+                        <th class="span6">Location</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="(name,type) in deployment.projectEndpoints">
+                        <td class="span6" ui-if="type.indexOf('BIDIRECTIONAL')!=-1">
+                            {{name}}
+                        </td>
+                        <td class="span6" ui-if="type.indexOf('BIDIRECTIONAL')!=-1">
+                            {{getLocationName(deployment.endpointLocations[name],locations)}}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <hr/>
+                <table class="table table-bordered table-striped" ui-if="!isEmpty(deployment.lookupTables)">
+                    <tr>
+                        <th>Lookup Table Place Holder</th>
+                        <th>Lookup Table Name</th>
+                        <th>Lookup Table Direction</th>
+                    </tr>
+                    <tr ng-repeat="(name,description) in deployment.lookupTables">
+                        <td>
+                            <span popover="{{description}}" popover-trigger="mouseenter">{{name}}</span>
+                        </td>
+                        <td>
+                            {{getLookupTableName(deployment.lookupTables[name],lookupTables)}}
+                        </td>
+                        <td>
+                            <span ui-if="deployment.lookupTableDirections[name]!='false'">Forward</span>
+                            <span ui-if="deployment.lookupTableDirections[name]=='false'">Reversed</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td class="span3">
+                <div ui-if="isUpdating()">
+                    <div class="progress progress-striped active">
+                        <div class="bar" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <alert ui-if="waitingForActivateConfirmation()&&!errorMessage" type="warning" close="cancelConfirm()">
+                    <p>Are you sure to activate current deployment?</p>
+
+                    <p>
+                        <a class="btn btn-danger btn-mini alert-yes"
+                           ng-click="submit(deployment)"><i class="icon-ok icon-white"></i> Yes</a>
+                    </p>
+                </alert>
+                <alert ui-if="waitingForDeactivateConfirmation()&&!errorMessage" type="warning" close="cancelConfirm()">
+                    <p>Are you sure to deactivate current deployment?</p>
+
+                    <p>
+                        <a class="btn btn-danger btn-mini alert-yes"
+                           ng-click="submit(deployment)"><i class="icon-ok icon-white"></i> Yes</a>
+                    </p>
+                </alert>
+                <alert type="error" ui-if="errorMessage" close="clearError()">
+                    <p>{{errorMessage}}</p>
+                </alert>
+                <button class="editDeploymentBtn btn btn-primary btn-mini" ng-click="detail()" ui-if="isViewing()">
+                    <i class="icon-plus icon-white"></i> <span>Detail</span>
+                </button>
+                <button class="foldDetailDeploymentBtn btn btn-primary btn-mini"
+                        ng-click="fold()" ui-if="isDetailing()">
+                    <i class="icon-minus icon-white"></i> <span>Fold</span>
+                </button>
+                <button class="activateBtn btn btn-success btn-mini"
+                        ng-click="activate()" ui-if="!deployment.running&&isViewing()">
+                    <i class="icon-remove icon-white"></i> <span>Activate</span>
+                </button>
+                <button class="deactivateBtn btn btn-danger btn-mini"
+                        ng-click="deactivate()" ui-if="deployment.running&&isViewing()">
+                    <i class="icon-remove icon-white"></i> <span>Deactivate</span>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

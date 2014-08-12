@@ -1,0 +1,116 @@
+<div id="main" class="container-fluid" ng-controller="TenantUserCtrl">
+    <div class="row-fluid">
+        <div class="span12">
+            <ul class="breadcrumb">
+                <li><a href="#/tenant-user"><i class="icon-home"></i></a> <span class="divider">/</span></li>
+                <li class="active"><i class="fa fa-user"></i>&nbsp;Tenant User</li>
+            </ul>
+
+            <select class="pull-left" ng-model="search.tenantIdentifier" ng-options="tenant.identifier as tenant.name for tenant in tenants.content">
+                <option value="">ALL</option>
+            </select>
+
+            <a ui-if="!search.tenantIdentifier" class="btn btn-primary pull-right newTenantButton" ng-click="newUser(users.content)" ui-if="!tenant.archived"><i
+                    class="icon-plus-sign icon-white"></i> New</a>
+
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="span3">Tenant</th>
+                    <th class="span3">Account</th>
+                    <th class="span3">Description</th>
+                    <th class="span3">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- list -->
+                <tr ng-repeat="user in users.content|filter:search" ng-controller="TenantUserEditCtrl">
+                    <!-- default -->
+                    <td class="span3" ui-if="!isEditing()">{{user.tenantName}}</td>
+                    <td class="span3" ui-if="!isEditing()">{{user.account}}</td>
+                    <td class="span3" ui-if="!isEditing()">{{user.description}}</td>
+                    <td class="span3" ui-if="!isEditing()">
+                        <div ui-if="isUpdating()">
+                            <div class="progress progress-striped active">
+                                <div class="bar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div ui-if="isViewing()&&false">
+                            <button class="editUserBtn btn btn-primary btn-mini" ng-click="edit()">
+                                <i class="icon-edit icon-white"></i> <span>Edit</span>
+                            </button>
+                        </div>
+                        <alert type="error" ui-if="errorMessage" close="clearError()">
+                            <p>{{errorMessage}}</p>
+                        </alert>
+                    </td>
+                    <!-- edit -->
+                    <td class="span9" colspan="3" ui-if="isEditing()">
+                        <form name="form" class="form-horizontal css-form" ng-init="$parent.form=form">
+                            <div class="control-group">
+                                <label class="control-label">Tenant<span style="color: red;">*</span></label>
+
+                                <div class="controls">
+                                    <select ui-if="!u.identifier" class="tenants" ng-model="u.tenantIdentifier" required
+                                            ng-options="tenant.identifier as tenant.name for tenant in tenants.content|filter:{archived:'false'}">
+                                    </select>
+                                    <span class="uneditable-input" ui-if="u.identifier">{{u.tenantName}}</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Account<span style="color: red;">*</span></label>
+
+                                <div class="controls">
+                                    <input type="text" class="input-block-level" maxlength="64" name="account" ui-if="!u.identifier&&isEditing()"
+                                           ng-model="u.account" required ng-maxlength="64" ng-minlength="6" ng-pattern="/^[a-zA-Z0-9_-]*$/"/>
+                                    <span class="uneditable-input" ui-if="u.identifier&&isEditing()">{{u.account}}</span>
+                                    <div class="help-block">
+                                        <span style="color: red" ui-if="form.account.$dirty&&form.account.$invalid&&!form.account.$error.minlength">Please use only letters (a-z,A-Z), numbers,underline, and line.And you have at lest 6 letters!</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Password<span style="color: red;">*</span></label>
+
+                                <div class="controls">
+                                    <input type="password" class="input-block-level" maxlength="128" name="password" id="password"
+                                           ng-model="u.password" required ng-maxlength="128" ng-minlength="6"/>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Confirm Password<span style="color: red;">*</span></label>
+
+                                <div class="controls">
+                                    <input type="password" class="input-block-level" maxlength="128" name="confirmPassword"
+                                           ng-model="u.confirmPassword" required ng-maxlength="128" ng-minlength="6" compare-with="password"/>
+
+                                    <div class="help-block">
+                                        <span style="color: red" ui-if="form.confirmPassword.$error.sameValue">Passwords don't match.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Description</label>
+
+                                <div class="controls">
+                                    <textarea class="input-block-level" maxlength="1024"
+                                              ng-model="u.description"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                    <td class="span3" ui-if="isEditing()">
+                        <button class="saveEditUserBtn btn btn-primary btn-mini" ng-click="submit(users.content,tenants.content)"
+                                ng-disabled="form.$invalid||form.$pristine">
+                            <i class="fa fa-save"></i> <span>Save</span>
+                        </button>
+                        <button class="cancelEditUserBtn btn btn-danger btn-mini" ng-click="cancel(users.content)">
+                            <i class="icon-remove icon-white"></i> <span>Cancel</span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

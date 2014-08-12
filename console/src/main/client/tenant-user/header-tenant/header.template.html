@@ -1,0 +1,55 @@
+<div class="navbar navbar-inverse navbar-fixed-top" ng-controller="TenantHeaderCtrl">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+            </a> <a class="brand" href="#" ng-click="tenantActive='active';locationActive=''">Freemr</a>
+
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    <li ng-class="menuItems.dashboard">
+                        <a href="#/dashboard"><i class="fa fa-dashboard"></i>&nbsp;Dashboard</a>
+                    </li>
+                    <li ng-class="menuItems.adapter">
+                        <a href="#/adapter-configurations"><i class="fa fa-tasks"></i>&nbsp;Adapter</a>
+                    </li>
+                    <li class="dropdown" ng-class="menuItems.resources">
+                        <a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-anchor"></i>&nbsp;Resources<b class="caret"></b></a>
+                        <ul class="dropdown-menu" style>
+                            <li>
+                                <a href="#/projects"><i class="fa fa-gear"></i>&nbsp;Project</a>
+                            </li>
+                            <li>
+                                <a href="#/agent-group"><i class="fa fa-group"></i>&nbsp;Agent Group</a>
+                            </li>
+                            <li>
+                                <a href="#/credentials"><i class="fa fa-credit-card"></i>&nbsp;Credential</a>
+                            </li>
+                            <li>
+                                <a href="#/lookup-tables"><i class="fa fa-table"></i>&nbsp;Lookup Table</a>
+                            </li>
+                            <li>
+                                <a href="#/usable-adapters"><i class="fa fa-suitcase"></i>&nbsp;Available Adapter</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" ng-class="menuItems.workspace">
+                        <a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-folder"></i>&nbsp;Workspaces<b class="caret"></b></a>
+
+                        <ul ng-include="'tenant-user/workspace/workspace.list.template.html'" class="dropdown-menu" ng-click="resourceActive='';workspaceActive='active'"></ul>
+                    </li>
+                </ul>
+
+                <ul class="nav pull-right">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown"> Logged as Tenant User<b class="caret"></b></a>
+                        <ul class="dropdown-menu" style>
+                            <li ng-click="logout()">
+                                <a class="navbar-link"><i class="fa fa-sign-out"></i>&nbsp;Sign out</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

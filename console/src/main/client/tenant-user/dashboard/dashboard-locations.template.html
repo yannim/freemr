@@ -1,0 +1,34 @@
+<div ng-controller="MonitorLocationsCtrl">
+    <h1 class="breadcrumb">Locations</h1>
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+        <tr>
+            <th class="span2">Location Identifier</th>
+            <th class="span2">Location Name</th>
+            <th class="span2">Type</th>
+            <th class="span2">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="location in locations" ng-controller="MonitorLocationCtrl">
+            <!-- viewing -->
+            <td class="span2"><a href="index.html#/monitor/locations/{{location.identifier}}/adapters">{{location.identifier}}</a>
+            </td>
+            <td class="span2"
+                ui-if="!(isAgent()&&!location.connected)">{{location.name}}
+            </td>
+            <td class="span2"
+                ui-if="isAgent()&&!location.connected">{{location.name}}
+            </td>
+            <td class="span2">{{location.locationType}}</td>
+            <td class="span2" ui-if="isAgent()">
+                <span class="label label-success" ui-if="location.connected">Connected</span>
+                <span class="label label-important" ui-if="!location.connected">Disconnected</span>
+            </td>
+            <td class="span2" ui-if="!isAgent()">
+                <span class="label label-success" ui-if="location.connected">Active</span>
+                <span class="label label-important" ui-if="!location.connected">Deactive</span>
+            </td>
+        </tbody>
+    </table>
+</div>

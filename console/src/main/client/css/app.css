@@ -1,0 +1,61 @@
+/* Custom CSS for angularjs template */
+.chart {
+	display: none;
+	height: 225px;
+}
+
+legend {
+	font-size: 21px;
+}
+
+.success {
+	color: #78FA89;
+}
+
+.ui-scrollfix {
+	position: fixed;
+}
+
+@media ( min-width : 1200px) {
+	.modal {
+		width: 960px;
+		margin-left: -480px;
+	}
+}
+
+/* Portrait tablet to landscape and desktop */
+@media ( min-width : 768px) and (max-width: 979px) {
+	.modal {
+		width: 760px;
+		margin-left: -380px;
+	}
+}
+
+/* Landscape phone to portrait tablet */
+@media ( max-width : 767px) {
+}
+
+/* Landscape phones and down */
+@media ( max-width : 480px) {
+	.modal {
+		width: 460px;
+		margin-left: -230px;
+	}
+}
+
+a.footer-link {
+	color: #000000;
+}
+
+a:hover.footer-link {
+	color: #005580;
+	text-decoration: underline;
+}
+
+.css-form input.ng-invalid.ng-dirty,textarea.ng-invalid.ng-dirty {
+	background-color: #FA787E;
+}
+
+.css-form input.ng-valid.ng-dirty,textarea.ng-valid.ng-dirty {
+	background-color: #78FA89;
+}

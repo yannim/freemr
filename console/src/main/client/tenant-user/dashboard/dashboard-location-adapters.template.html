@@ -1,0 +1,121 @@
+<div id="main" class="container-fluid" ng-controller="MonitorLocationAdaptersCtrl">
+    <div class="row-fluid">
+        <div class="span12">
+            <ul class="breadcrumb">
+                <li><a href="#/dashboard"><i class="icon-home"></i></a> <span class="divider">/</span></li>
+                <li class="active">
+                    <i class="fa fa-cloud" ui-if="location.locationType=='Central'"></i>
+                    <i class="fa fa-location-arrow" ui-if="location.locationType=='Agent'"></i> {{location.name}}
+                </li>
+            </ul>
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="span2">Endpoint Name</th>
+                    <th class="span2">Status</th>
+                    <th class="span2">Exchange Pattern</th>
+                    <th class="span2">Protocol</th>
+                    <th class="span2">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="adapter in adapters" ng-controller="MonitorLocationAdapterCtrl">
+                    <!-- viewing -->
+                    <td class="span2" ui-if="!isDetailing()">{{adapter.name}}</td>
+                    <td class="span2" ui-if="!isDetailing()">
+                        <span class="label label-success" ui-if="adapter.running">Active</span>
+                        <span class="label label-important" ui-if="!adapter.running">Inactive</span>
+                    </td>
+                    <td class="span2" ui-if="!isDetailing()">{{adapter.exchangePattern}}</td>
+                    <td class="span2" ui-if="!isDetailing()">{{adapter.protocol}}</td>
+
+                    <!-- for detail -->
+                    <td class="span10" colspan="4" ui-if="isDetailing()">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th colspan="2">Basic Information</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Endpoint Name
+                                </td>
+                                <td>
+                                    {{adapter.name}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Project
+                                </td>
+                                <td>
+                                    {{adapter.projectName}} / {{adapter.projectVersion}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Deployment
+                                </td>
+                                <td>
+                                    {{adapter.deploymentName}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Status
+                                </td>
+                                <td>
+                                    <span class="label label-success" ui-if="adapter.running">Active</span>
+                                    <span class="label label-important" ui-if="!adapter.running">Inactive</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Exchange Pattern
+                                </td>
+                                <td>
+                                    {{adapter.exchangePattern}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Protocol
+                                </td>
+                                <td>
+                                    {{adapter.protocol}}
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th colspan="2">Adapter Configuration</th>
+                            </tr>
+                            <tr>
+                                <th style="text-align: right;width: 30%;">Key</th>
+                                <th>Value</th>
+                            </tr>
+                            <tr ng-repeat="(key,value) in adapter.configuration">
+                                <td style="text-align: right">{{key}}</td>
+                                <td>{{value}}</td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <td class="span2" ui-if="isViewing()">
+                        <div ui-if="isViewing()&&adapter.configuration">
+                            <button class="editDeploymentBtn btn btn-primary btn-mini" ng-click="detail()">
+                                <i class="icon-plus icon-white"></i> <span>Detail</span>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="span2" ui-if="isDetailing()&&adapter.configuration">
+                        <button class="foldDetailDeploymentBtn btn btn-primary btn-mini"
+                                ng-click="fold()">
+                            <i class="icon-minus icon-white"></i> <span>Fold</span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

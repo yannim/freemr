@@ -1,0 +1,101 @@
+<groups xmlns="http://www.isdc.ro/wro">
+
+    <group name="application">
+        <group-ref>tenant</group-ref>
+        <group-ref>root-tenant</group-ref>
+        <group-ref>header</group-ref>
+        <group-ref>footer</group-ref>
+        <group-ref>root</group-ref>
+        <group-ref>directives</group-ref>
+        <group-ref>error-handle</group-ref>
+        <group-ref>tenant-user</group-ref>
+        <group-ref>header-tenant</group-ref>
+        <group-ref>root-tenant</group-ref>
+        <group-ref>cloud</group-ref>
+        <group-ref>global-dashboard</group-ref>
+
+        <!-- tenant user -->
+        <group-ref>tenant-user-dashboard</group-ref>
+        
+        <!-- common -->
+        <css>/css/*.css</css>
+    </group>
+
+
+    <group name="tenant-user-project">
+        <js>/tenant-user/project/project.template.html</js>
+    </group>
+
+    <group name="root">
+        <js>/app/app.js</js>
+    </group>
+
+    <group name="root-tenant">
+        <js>/tenant-user/app-tenant.js</js>
+    </group>
+
+    <group name="directives">
+        <js>/common/directives/jasny-file-uploader.js</js>
+        <js>/common/directives/multiple-file-upload.js</js>
+        <js>/common/directives/compile.js</js>
+        <js>/common/directives/value-comparator.js</js>
+    </group>
+    <group name="error-handle">
+        <js>/common/error-handle/error-handle.js</js>
+    </group>
+
+    <group name="tenant">
+        <js>/app/tenant/tenant.js</js>
+        <js>/app/tenant/tenant-service.js</js>
+        <js>/app/tenant/tenant.template.html</js>
+    </group>
+
+
+    <group name="header">
+        <js>/app/header/header.js</js>
+        <js>/app/header/header.template.html</js>
+    </group>
+
+    <group name="header-tenant">
+        <js>/tenant-user/header-tenant/header.js</js>
+        <js>/tenant-user/header-tenant/header.template.html</js>
+    </group>
+
+    <group name="footer">
+        <js>/common/footer/footer.template.html</js>
+    </group>
+
+
+    <group name="tenant-user">
+        <js>/app/tenant-user/tenant-user.js</js>
+        <js>/app/tenant-user/tenant-user-service.js</js>
+        <js>/app/tenant-user/tenant-user.template.html</js>
+    </group>
+
+    <group name="cloud">
+        <js>/app/cloud/cloud.js</js>
+        <js>/app/cloud/cloud-service.js</js>
+        <js>/app/cloud/cloud.template.html</js>
+    </group>
+
+
+    <group name="tenant-user-dashboard">
+        <js>/tenant-user/dashboard/dashboard-deployment.js</js>
+        <js>/tenant-user/dashboard/dashboard-deployment-service.js</js>
+        <js>/tenant-user/dashboard/dashboard.template.html</js>
+        <js>/tenant-user/dashboard/dashboard-deployments.template.html</js>
+        <js>/tenant-user/dashboard/dashboard-locations.js</js>
+        <js>/tenant-user/dashboard/dashboard-locations-service.js</js>
+        <js>/tenant-user/dashboard/dashboard-locations.template.html</js>
+        <js>/tenant-user/dashboard/dashboard-location-adapters.js</js>
+        <js>/tenant-user/dashboard/dashboard-location-adapters-service.js</js>
+        <js>/tenant-user/dashboard/dashboard-location-adapters.template.html</js>
+    </group>
+
+    <group name="global-dashboard">
+        <js>/app/global-dashboard/global-dashboard.js</js>
+        <js>/app/global-dashboard/global-dashboard-service.js</js>
+        <js>/app/global-dashboard/global-dashboard.template.html</js>
+    </group>
+
+</groups>

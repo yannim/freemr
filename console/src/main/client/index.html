@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+<!--[if lte IE 8]>
+      <script>
+        document.createElement('alert');
+      </script>
+    <![endif]-->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Application" />
+<meta name="author" content="E.Novation B.V." />
+
+<title>Freemr</title>
+
+<!-- external stylesheet assets -->
+<link href="libs/bootstrap/${bootstrap.version}/css/bootstrap${minified}.css" rel="stylesheet">
+<link href="libs/bootstrap/${bootstrap.version}/css/bootstrap-responsive${minified}.css" rel="stylesheet">
+<link href="libs/font-awesome/${font-awesome.version}/css/font-awesome${minified}.css" rel="stylesheet">
+<link href="libs/angular-ui/${angular-ui.version}/angular-ui${minified}.css" rel="stylesheet">
+<link href="libs/jasny-bootstrap/${jasny-bootstrap.version}/css/jasny-bootstrap${minified}.css" rel="stylesheet">
+
+<!-- application stylesheet assets -->
+<link rel="shortcut icon" href="freemr-management-console/${project.version}/img/favicon.ico">
+<link href="freemr-management-console/${project.version}/css/application.css${wro4j.development.options}" rel="stylesheet">
+
+<!-- external javascript assets -->
+<script type="text/javascript" src="libs/jquery/${jquery.version}/jquery${minified}.js"></script>
+<script type="text/javascript" src="libs/jquery-form/${jquery-form.version}/jquery.form.js"></script>
+<script type="text/javascript" src="libs/bootstrap/${bootstrap.version}/js/bootstrap${minified}.js"></script>
+<script type="text/javascript" src="libs/momentjs/${momentjs.version}/moment${minified}.js"></script>
+<script type="text/javascript" src="libs/angularjs/${angularjs.version}/angular${minified}.js"></script>
+<script type="text/javascript" src="libs/angular-ui/${angular-ui.version}/angular-ui${minified}.js"></script>
+<script type="text/javascript" src="libs/jasny-bootstrap/${jasny-bootstrap.version}/js/jasny-bootstrap${minified}.js"></script>
+
+<script type="text/javascript" src="libs/angular-ui-bootstrap/${angular-ui-bootstrap.version}/ui-bootstrap-tpls${minified}.js"></script>
+<script type="text/javascript" src="libs/angularjs/${angularjs.version}/angular-sanitize${minified}.js"></script>
+<script type="text/javascript" src="libs/underscorejs/${underscorejs.version}/underscore${minified}.js"></script>
+
+<!-- application javascript assets -->
+<script type="text/javascript" src="freemr-management-console/${project.version}/js/application.js${wro4j.development.options}"></script>
+</head>
+<body>
+	<div ng-include="'app/header/header.template.html'"></div>
+	<div id="wrap">
+		<!-- Partial Views -->
+		<div ng-view></div>
+	</div>
+	<div ng-include="'common/footer/footer.template.html'"></div>
+</body>
+</html>

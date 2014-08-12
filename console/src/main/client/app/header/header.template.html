@@ -1,0 +1,92 @@
+<div class="navbar navbar-inverse navbar-fixed-top" ng-controller="HeaderCtrl">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+            </a> <a class="brand" href="#" ng-click="switchMenuItem('tenant',true)">Freemr</a>
+
+            <div class="nav-collapse collapse">
+                <ul class="nav pull-right" ui-if="!runAsTenant">
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> Logged as System Administrator <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li ng-click="logout()"><a href class="navbar-link"><i class="fa fa-sign-out"></i> Sign out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav pull-right" ui-if="runAsTenant">
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> Logged as Tenant: {{loginedTenant.username}} <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li ng-click="switchMenuItem('tenant',true,'/tenant')"><a href class="navbar-link"><i class="fa fa-user-md"></i> Run as administrator</a></li>
+                            <li ng-click="logout()"><a href class="navbar-link"><i class="fa fa-sign-out"></i> Sign out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav">
+                    <li ng-class="menuItems.globalDashboard" ui-if="!runAsTenant">
+                        <a href="" ng-click="switchMenuItem('global-dashboard',true,'/global-dashboard')"><i class="fa fa-dashboard"></i>&nbsp;Dashboard</a>
+                    </li>
+                    <li ng-class="menuItems.tenant" ui-if="!runAsTenant">
+                        <a href="" ng-click="switchMenuItem('tenant',true,'/tenant')"><i class="fa fa-building"></i>&nbsp;Tenant</a>
+                    </li>
+                    <li ng-class="menuItems.cloud" ui-if="!runAsTenant">
+                        <a href="" ng-click="switchMenuItem('cloud',true,'/cloud')"><i class="fa fa-cloud"></i>&nbsp;Cloud</a>
+                    </li>
+                    <li ng-class="menuItems.agent" ui-if="!runAsTenant">
+                        <a href="" ng-click="switchMenuItem('agent',true,'/agent')"><i class="fa fa-location-arrow"></i>&nbsp;Agent</a>
+                    </li>
+                    <li class="dropdown" ng-class="menuItems.resources" ui-if="!runAsTenant">
+                        <a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-anchor"></i>&nbsp;Resources<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="" ng-click="switchMenuItem('resources',true,'/tenant-user')"><i class="fa fa-user"></i>&nbsp;Tenant User</a>
+                            </li>
+                            <li>
+                                <a href="" ng-click="switchMenuItem('resources',true,'/adapter-definition')"><i class="fa fa-suitcase"></i>&nbsp;Available Adapter</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="nav-header">Definitions</li>
+                            <li>
+                                <a href="" ng-click="switchMenuItem('resources',true,'/node-definition')"><i class="fa fa-square"></i>&nbsp;Node</a>
+                            </li>
+                            <li>
+                                <a href="" ng-click="switchMenuItem('resources',true,'/available-adapter-definition')"><i class="fa fa-suitcase"></i>&nbsp;Adapter</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav" ui-if="runAsTenant">
+                    <li ng-class="menuItems.dashboard">
+                        <a href="" ng-click="switchMenuItem('dashboard',false,'/dashboard')"><i class="fa fa-dashboard"></i>&nbsp;Dashboard</a>
+                    </li>
+                    <li class="dropdown" ng-class="menuItems.resources">
+                        <a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-anchor"></i>&nbsp;Resources<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="" ng-click="switchMenuItem('resources',false,'/projects')"><i class="fa fa-gear"></i>&nbsp;Project</a>
+                            </li>
+                            <li>
+                                <a href="" ng-click="switchMenuItem('resources',false,'/agent-group')"><i class="fa fa-group"></i>&nbsp;Agent Group</a>
+                            </li>
+                            <li>
+                                <a href="" ng-click="switchMenuItem('resources',false,'/credentials')"><i class="fa fa-credit-card"></i>&nbsp;Credential</a>
+                            </li>
+                            <li>
+                                <a href="" ng-click="switchMenuItem('resources',false,'/lookup-tables')"><i class="fa fa-table"></i>&nbsp;Lookup Table</a>
+                            </li>
+                            <li>
+                                <a href="" ng-click="switchMenuItem('resources',false,'/usable-adapters')"><i class="fa fa-suitcase"></i>&nbsp;Available Adapter</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li ng-class="menuItems.adapter">
+                        <a href="" ng-click="switchMenuItem('adapter',false,'/adapter-configurations')"><i class="fa fa-tasks"></i>&nbsp;Adapter</a>
+                    </li>
+                    <li class="dropdown" ng-class="menuItems.workspace">
+                        <a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-folder"></i>&nbsp;Workspaces<b class="caret"></b></a>
+
+                        <ul ng-include="'tenant-user/workspace/workspace.list.template.html'" class="dropdown-menu" ng-click="resourceActive='';workspaceActive='active'"></ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

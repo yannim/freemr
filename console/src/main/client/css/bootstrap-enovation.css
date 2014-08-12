@@ -1,0 +1,67 @@
+/* sticky footer code: https://github.com/dvanderbeek/bootstrap/blob/master/examples/sticky.html */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* must declare 0 margins on everything, also for main layout components use padding, not
+vertical margins (top and bottom) to add spacing, else those margins get added to total height
+and your footer gets pushed down a bit more, creating vertical scroll bars in the browser */
+
+html, body {
+    background-color: #fff;
+    height: 100%
+}
+
+.navbar .navbar-inner {
+    border-bottom: 5px #c21f3e solid;
+}
+
+.row-fluid {
+    /* padding: 3px; */
+}
+
+.input-mini-custom {
+    width: 40px;
+}
+
+#wrap {
+    min-height: 100%;
+}
+
+#main {
+    overflow: visible;
+    padding-bottom: 120px; /* must have the same value as the margin-top value from the footer */
+    padding-top: 80px;
+}
+
+footer {
+    background-color: #CCC;
+    background-image: linear-gradient(bottom, rgb(156, 154, 156) 1%, rgb(184, 184, 184) 60%);
+    background-image: -o-linear-gradient(bottom, rgb(156, 154, 156) 1%, rgb(184, 184, 184) 60%);
+    background-image: -moz-linear-gradient(bottom, rgb(156, 154, 156) 1%, rgb(184, 184, 184) 60%);
+    background-image: -webkit-linear-gradient(bottom, rgb(156, 154, 156) 1%, rgb(184, 184, 184) 60%);
+    background-image: -ms-linear-gradient(bottom, rgb(156, 154, 156) 1%, rgb(184, 184, 184) 60%);
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.01, rgb(156, 154, 156)), color-stop(0.6, rgb(184, 184, 184)));
+    border-bottom: 5px #ee820f solid;
+    position: relative;
+    margin-top: -120px;
+    clear: both;
+    height: 115px;
+    padding: 0px;
+}
+
+#footer {
+    padding: 10px;
+}
+
+/*Opera Fix*/
+body:before {
+    /* thanks to Maleika (Kohoutec)*/
+    content: "";
+    height: 100%;
+    float: left;
+    width: 0;
+    margin-top: -32767px; /* thank you Erik J - negate effect of float*/
+}

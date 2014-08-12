@@ -1,0 +1,128 @@
+<div id="main" class="container-fluid" ng-controller="TenantCtrl">
+    <div class="row-fluid">
+        <div class="span12">
+            <select class="pull-left" ng-model="search.archived" ng-init="search.archived='FALSE'">
+                <option value="">ALL</option>
+                <option value="FALSE">Not Archived</option>
+                <option value="TRUE">Archived</option>
+            </select>
+
+            <a ui-if="search.archived!='TRUE'" class="btn btn-primary pull-right newTenantButton" ng-click="newTenant(tenants.content)"><i
+                    class="icon-plus-sign icon-white"></i> New</a>
+            <table class="table table-hover table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th class="span3">Name</th>
+                    <th class="span3">Organization Name</th>
+                    <th class="span3">Contact Information</th>
+                    <th class="span1">Enabled</th>
+                    <th class="span2">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- list -->
+                <tr ng-repeat="tenant in tenants.content|filter:search" ng-controller="TenantEditCtrl">
+                    <!-- default -->
+                    <td class="span3" ui-if="!isEditing()">
+                        <a href="" ng-click="switchRole(tenant)" tooltip-placement="right" tooltip-html-unsafe="{{tenant.description|newLineToBreak}}">{{tenant.name}}</a>
+                    </td>
+                    <td class="span3" ui-if="!isEditing()">{{tenant.organizationName}}</td>
+                    <td class="span3" ui-if="!isEditing()" ng-bind-html="tenant.contactInformation|newLineToBreak"></td>
+                    <td class="span1" ui-if="!isEditing()">
+                        <div ng-switch on="tenant.archived">
+                            <span ng-switch-when="false" class="label label-success"><i class="fa fa-check-circle"></i></span>
+                            <span ng-switch-when="true" class="label label-important"><i class="fa fa-times-circle"></i></span>
+                        </div>
+                    </td>
+                    <td class="span2" ui-if="!isEditing()">
+                        <div ui-if="isUpdating()">
+                            <div class="progress progress-striped active">
+                                <div class="bar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div ui-if="isViewing()&&!tenant.archived">
+                            <button class="editTenantBtn btn btn-primary btn-mini" ng-click="edit()">
+                                <i class="icon-edit icon-white"></i> <span>Edit</span>
+                            </button>
+                            <button class="deleteTenantBtn btn btn-danger btn-mini" ng-click="archive()">
+                                <i class="icon-remove icon-white"></i> <span>Archive</span>
+                            </button>
+                        </div>
+                        <alert ui-if="waitingForDeleteConfirmation()" type="warning" close="cancelArchive()">
+                            <p>Are you sure to archive current tenant?</p>
+
+                            <p>
+                                <a class="btn btn-danger btn-mini alert-yes confirmDeleteTenantBtn"
+                                   ng-click="submit(tenants.content)"><i class="icon-ok icon-white"></i> Yes</a>
+                            </p>
+                        </alert>
+                        <alert type="error" ui-if="errorMessage" close="clearError()">
+                            <p>{{errorMessage}}</p>
+                        </alert>
+                    </td>
+                    <!-- edit -->
+                    <td class="span10" colspan="4" ui-if="isEditing()">
+                        <form name="form" class="form-horizontal css-form" ng-init="$parent.form=form">
+                            <div class="control-group">
+                                <label class="control-label">Name<span style="color: red;">*</span></label>
+
+                                <div class="controls">
+                                    <input type="text" class="input-block-level" maxlength="128" name="name"
+                                           ng-model="t.name" required ng-maxlength="128" ng-minlength="1" ng-pattern="/^[a-zA-Z0-9_-]*$/"/>
+
+                                    <div class="help-block">
+                                        <span style="color: red" ui-if="form.name.$dirty&&!form.name.$valid">Please use only letters (a-z,A-Z), numbers,underline, and line!</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Organization Name<span style="color: red;">*</span></label>
+
+                                <div class="controls">
+                                    <input type="text" class="input-block-level" maxlength="255" name="organizationName"
+                                           ng-model="t.organizationName" required ng-maxlength="255" ng-minlength="1"/>
+
+                                    <div class="help-block">
+                                        <span class="error"
+                                              ng-show="form.organizationName.$dirty&&!form.organizationName.$valid">The length of organization name must greater than 0 and less than 255!</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Contact Information<span style="color: red;">*</span></label>
+
+                                <div class="controls">
+                                    <textarea type="text" name="contactInformation" class="input-block-level"
+                                              maxlength="255" ng-model="t.contactInformation" required></textarea>
+
+                                    <div class="help-block">
+                                        <span class="error"
+                                              ng-show="form.contactInformation.$dirty&&!form.contactInformation.$valid">The length of contact information must greater than 0 and less than 255!</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Description</label>
+
+                                <div class="controls">
+                                    <textarea class="input-block-level" maxlength="1024"
+                                              ng-model="t.description"></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                    <td class="span2" ui-if="isEditing()">
+                        <button class="saveEditTenantBtn btn btn-primary btn-mini" ng-click="submit(tenants.content)"
+                                ng-disabled="form.$invalid||form.$pristine">
+                            <i class="fa fa-save"></i> <span>Save</span>
+                        </button>
+                        <button class="cancelEditTenantBtn btn btn-danger btn-mini" ng-click="cancel(tenants.content)">
+                            <i class="icon-remove icon-white"></i> <span>Cancel</span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
