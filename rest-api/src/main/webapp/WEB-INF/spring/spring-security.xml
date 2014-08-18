@@ -10,7 +10,7 @@
 	</bean>
 
 	<sec:http pattern="/login.html" security="none" />
-	<sec:http pattern="/clouds/**" security="none" />
+	<sec:http pattern="/tenants/**" security="none" />
 	<sec:http pattern="/libs/bootstrap/**" security="none" />
 
 	<sec:http entry-point-ref="authenticationEntryPoint" disable-url-rewriting="true">

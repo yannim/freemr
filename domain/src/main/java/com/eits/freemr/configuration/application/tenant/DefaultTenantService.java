@@ -8,6 +8,7 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.domain.IdentifierFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.eits.freemr.configuration.application.interfaces.services.TenantService;
 import com.eits.freemr.configuration.domain.interfaces.commands.tenant.ArchiveTenantCommand;
@@ -28,6 +29,7 @@ public class DefaultTenantService implements TenantService {
     private IdentifierFactory identifierFactory;
 
     @Override
+    @Transactional
     public String create(String name, String description, String organizationName, String contactInformation) {
         CreateTenantCommand command = new CreateTenantCommand(identifierFactory.generateIdentifier(), name, description, organizationName, contactInformation);
         commandGateway.sendAndWait(command);
@@ -35,11 +37,13 @@ public class DefaultTenantService implements TenantService {
     }
 
     @Override
+    @Transactional
     public void modify(String identifier, String name, String description, String organizationName, String contactInformation) {
         commandGateway.sendAndWait(new ModifyTenantCommand(identifier, name, description, organizationName, contactInformation));
     }
 
     @Override
+    @Transactional
     public void delete(String identifier) {
         commandGateway.sendAndWait(new ArchiveTenantCommand(identifier));
     }

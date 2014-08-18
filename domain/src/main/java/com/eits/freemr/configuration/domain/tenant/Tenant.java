@@ -1,12 +1,11 @@
 package com.eits.freemr.configuration.domain.tenant;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.axonframework.commandhandling.annotation.CommandHandler;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventhandling.annotation.EventHandler;
+import org.axonframework.eventsourcing.annotation.EventSourcingHandler;
 
 import com.eits.freemr.configuration.domain.ArchivableAggregateRoot;
 import com.eits.freemr.configuration.domain.interfaces.commands.tenant.ArchiveTenantCommand;
@@ -23,8 +22,6 @@ public class Tenant extends ArchivableAggregateRoot<String> {
     private static final String TENANT_IDENTIFIER_KEY = "tenantIdentifier";
 
     private String name;
-
-    private final Map<String, String> assignedAdapters = new HashMap<String, String>();
 
     Tenant() {
     }
@@ -53,13 +50,13 @@ public class Tenant extends ArchivableAggregateRoot<String> {
     }
 
 
-    @EventHandler
+    @EventSourcingHandler
     void on(TenantCreatedEvent event) {
         setAggregateIdentifier(event.getIdentifier());
         this.name = event.getName();
     }
 
-    @EventHandler
+    @EventSourcingHandler
     void on(TenantArchivedEvent event) {
         setArchived(true);
     }

@@ -16,9 +16,13 @@ import org.axonframework.eventstore.jpa.SnapshotEventEntry;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.eits.freemr.configuration.view.global.cloud.Cloud;
+import com.eits.freemr.configuration.view.global.tenant.user.TenantUser;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +38,7 @@ public class HibernateTenantSchemaExport implements TenantSchemaExport {
     @NonNull
     private String dialect;
 
-    private static final Class<?>[] GLOBAL_TABLES = { DomainEventEntry.class, SnapshotEventEntry.class };
+    private static final Class<?>[] GLOBAL_TABLES = { DomainEventEntry.class, SnapshotEventEntry.class, Tenant.class, Cloud.class, TenantUser.class };
 
     private static final Class<?>[] TENANT_TABLES = { DomainEventEntry.class, SnapshotEventEntry.class };
 
@@ -67,7 +71,9 @@ public class HibernateTenantSchemaExport implements TenantSchemaExport {
         properties.setProperty(Environment.DEFAULT_SCHEMA, "\"" + schema + "\"");
         configuration.setProperties(properties);
 
-        SchemaExport se = new SchemaExport(configuration);
-        se.execute(false, true, false, true);
+//        SchemaExport se = new SchemaExport(configuration);
+//        se.execute(false, true, false, true);
+        SchemaUpdate se = new SchemaUpdate(configuration);
+        se.execute(false, true);
     }
 }

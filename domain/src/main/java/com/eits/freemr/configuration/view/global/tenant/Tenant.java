@@ -4,10 +4,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.springframework.hateoas.Identifiable;
+
 import com.eits.freemr.configuration.common.TableConstants;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +18,12 @@ import lombok.RequiredArgsConstructor;
 /**
  * The Class Tenant.
  */
-@Entity(name = TableConstants.TABLE_PREFIX + "tenant")
+@Entity(name = TableConstants.VIEW_PREFIX + "tenant")
 @RequiredArgsConstructor
 @Data
 @EqualsAndHashCode(of = "identifier")
 @NoArgsConstructor
-public class Tenant {
+public class Tenant implements Identifiable<String>{
 
     /** The identifier. */
     @Id
@@ -47,5 +50,9 @@ public class Tenant {
     /** The archive. */
     @Column
     private boolean archived;
+    
+    public String getId() {
+        return identifier;
+    }
 
 }

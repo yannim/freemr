@@ -6,18 +6,20 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.springframework.hateoas.Identifiable;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-@Entity(name = TableConstants.TABLE_PREFIX + "cloud")
+@Entity(name = TableConstants.VIEW_PREFIX + "cloud")
 @Data
 @EqualsAndHashCode(of = "identifier")
 @RequiredArgsConstructor
 @NoArgsConstructor
-public class Cloud {
+public class Cloud implements Identifiable<String>{
 
     @Id
     @NonNull
@@ -37,5 +39,10 @@ public class Cloud {
 
     @Column
     private boolean archived;
+
+    @Override
+    public String getId() {
+        return identifier;
+    }
 
 }

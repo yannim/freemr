@@ -10,14 +10,22 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
+	
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<!-- <property name="persistenceUnitName" value="rest"></property> -->
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="databasePlatform" value="${hibernate.dialect}" />
+				<property name="showSql" value="${hibernate.show_sql}" />
+			</bean>
+		</property>
 		<property name="jpaProperties">
 			<props>
 				<prop key="javax.persistence.validation.mode">none</prop>
-				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<!-- <prop key="hibernate.dialect">${hibernate.dialect}</prop>
 				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
 				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
-				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop> -->
 				<prop key="hibernate.connection.autocommit">false</prop>
 				<prop key="hibernate.multiTenancy">SCHEMA</prop>
 				<prop key="hibernate.tenant_identifier_resolver">com.eits.freemr.configuration.infrastructure.multitenancy.SchemaResolver</prop>
@@ -25,10 +33,18 @@
 			</props>
 		</property>
 		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan">
+			<array>
+				<value>org.axonframework.eventstore.jpa</value>
+				<value>com.eits.freemr.configuration.view</value>
+			</array>
+		</property>
 	</bean>
+	
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
+	
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
 		<property name="driverClass" value="${jdbc.driverclass}" />
 		<property name="jdbcUrl" value="${jdbc.url}" />
@@ -37,5 +53,7 @@
 		<property name="maxPoolSize" value="15" />
 		<property name="minPoolSize" value="5" />
 	</bean>
+	
 	<jpa:repositories base-package="com.eits.freemr.configuration.view" entity-manager-factory-ref="entityManagerFactory" />
+	
 </beans>

@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.springframework.hateoas.Identifiable;
+
 import com.eits.freemr.configuration.common.TableConstants;
 
 import lombok.Data;
@@ -12,12 +14,12 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-@Entity(name = TableConstants.TABLE_PREFIX + "tenant_user")
+@Entity(name = TableConstants.VIEW_PREFIX + "tenant_user")
 @RequiredArgsConstructor
 @Data
 @EqualsAndHashCode(of = "identifier")
 @NoArgsConstructor
-public class TenantUser {
+public class TenantUser implements Identifiable<String>{
     @Id
     @NonNull
     @Column(length = 36)
@@ -37,4 +39,8 @@ public class TenantUser {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+    
+    public String getId() {
+        return identifier;
+    }
 }

@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -50,24 +53,31 @@ public class TenantController extends AbstractController {
     @Autowired
     @NonNull
     private TenantView tenantView;
+    
+    private final TenantResourceAssembler tenantResourceAssembler = new TenantResourceAssembler();
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
-    public Page<Tenant> findAll(@RequestParam(value = "exclude", defaultValue = "", required = false) String exclude, Pageable pageable) {
-        return tenantView.findAll(exclude, pageable);
+    public HttpEntity<PagedResources<?>> findAll(@RequestParam(value = "exclude", defaultValue = "", required = false) String exclude, Pageable pageable) {
+        Page<Tenant> tenants =  tenantView.findAll(exclude, pageable);
+        PagedResources<?> resources = tenantResourceAssembler.toResources(tenants);
+        return new ResponseEntity<PagedResources<?>>(resources, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "archived/{archived}/")
-    @ResponseBody
-    public Page<Tenant> findAllArchived(@PathVariable(value = "archived") boolean archived, Pageable pageable) {
-        return tenantView.findAllArchived(archived, pageable);
+    public HttpEntity<PagedResources<?>> findAllArchived(@PathVariable(value = "archived") boolean archived, Pageable pageable) {
+        Page<Tenant> tenants = tenantView.findAllArchived(archived, pageable);
+        PagedResources<?> resources = tenantResourceAssembler.toResources(tenants);
+        return new ResponseEntity<PagedResources<?>>(resources, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public String create(@RequestBody CreateTenantRequest request) {
+    public HttpEntity<?> create(@RequestBody CreateTenantRequest request) {
         tenantValidator.assertTenantNameNotInUse(request.getName());
-        return tenantService.create(request.getName(), request.getDescription(), request.getOrganizationName(), request.getContactInformation());
+        String id = tenantService.create(request.getName(), request.getDescription(), request.getOrganizationName(), request.getContactInformation());
+        Tenant entity = tenantView.findByIdentifier(id);
+        TenantResource resource = tenantResourceAssembler.toResource(entity);
+        return new ResponseEntity<TenantResource>(resource, HttpStatus.OK);   
     }
 
     @RequestMapping(value = "{identifier}", method = RequestMethod.PUT)
@@ -85,9 +95,10 @@ public class TenantController extends AbstractController {
     }
 
     @RequestMapping(value = "{identifier}", method = RequestMethod.GET)
-    @ResponseBody
-    public Tenant findTenant(@PathVariable String identifier) {
-        return tenantView.findByIdentifier(identifier);
+    public ResponseEntity<TenantResource> findTenant(@PathVariable String identifier) {
+        Tenant tenant = tenantView.findByIdentifier(identifier);
+        TenantResource resource = tenantResourceAssembler.toResource(tenant);
+        return new ResponseEntity<TenantResource>(resource, HttpStatus.OK);
     }
 
     @RequestMapping(value = "run-as-tenant/{identifier}/", method = RequestMethod.GET)

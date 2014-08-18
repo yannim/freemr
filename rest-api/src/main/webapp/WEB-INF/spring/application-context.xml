@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:osgi="http://www.springframework.org/schema/osgi" xmlns:osgix="http://www.springframework.org/schema/osgi-compendium" xmlns:axon="http://www.axonframework.org/schema/core"
-	xmlns:task="http://www.springframework.org/schema/task" xmlns:rabbit="http://www.springframework.org/schema/rabbit" xmlns:amqp="http://www.axonframework.org/schema/amqp"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:rabbit="http://www.springframework.org/schema/rabbit" xmlns:axon-amqp="http://www.axonframework.org/schema/amqp"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" 
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 	http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
@@ -9,6 +10,7 @@
     http://www.axonframework.org/schema/core http://www.axonframework.org/schema/axon-core.xsd
     http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
     http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+    http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd
 		http://www.axonframework.org/schema/amqp http://www.axonframework.org/schema/axon-amqp.xsd">
 
 	<!-- context -->
@@ -26,9 +28,11 @@
 		</property>
 	</bean>
 	
+	<!-- jmx -->
 	<bean id="jolokiaUrl" class="java.lang.String">
 		<constructor-arg value="${jolokia.url}" />
 	</bean>
+	
 	<bean id="restOperations" class="org.springframework.web.client.RestTemplate"/>
 	<bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
 
@@ -47,7 +51,7 @@
 	
 	<!--axon infrastructure -->
 	<axon:command-bus id="commandBus" transaction-manager="transactionManager">
-		<axon:dispatchInterceptors>
+		<!-- <axon:dispatchInterceptors>
 			<bean class="com.eits.freemr.configuration.application.tenantuser.interceptor.TenantUserInterceptor" />
 		</axon:dispatchInterceptors>
 		<axon:handlerInterceptors>
@@ -56,7 +60,7 @@
 					<bean id="lazyValidatorFactory" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 				</constructor-arg>
 			</bean>
-		</axon:handlerInterceptors>
+		</axon:handlerInterceptors>-->
 	</axon:command-bus>
 
 	<bean id="__axon-annotation-event-listener-bean-post-processor" class="org.axonframework.eventhandling.annotation.AnnotationEventListenerBeanPostProcessor">
@@ -69,7 +73,7 @@
 
 	<axon:snapshotter id="snapshotter" event-store="eventStore" />
 	
-	<axon:jpa-event-store id="eventStore" />
+	<axon:jpa-event-store id="eventStore"/>
 	
 	<axon:annotation-config command-bus="commandBus" event-bus="eventBus" />
 	
@@ -77,8 +81,10 @@
 		<property name="commandBus" ref="commandBus" />
 	</bean>
 	
+	<!-- <axon-amqp:terminal id="terminal" connection-factory="connectionFactory" routing-key-resolver="routingKeyResolver" serializer="serializer"
+		exchange-name="freemr.domain.topic" />-->
 
-	<!-- rabbitMQ -->
+	<!-- rabbitMQ
 	<rabbit:topic-exchange name="freemr.domain.topic" />
 	<rabbit:connection-factory id="connectionFactory" host="${rabbitmq.host:localhost}" port="${rabbitmq.port:5672}" username="${rabbitmq.username:guest}"
 		password="${rabbitmq.password:guest}" />
@@ -89,14 +95,11 @@
 	
 	<bean id="routingKeyResolver" class="com.eits.freemr.configuration.application.amqp.MetaDataRoutingKeyResolver" />
 	
-	<amqp:terminal id="terminal" connection-factory="connectionFactory" routing-key-resolver="routingKeyResolver" serializer="serializer"
-		exchange-name="freemr.domain.topic" />
-	
 	<bean id="serializerMessageConverter" class="com.eits.freemr.configuration.rest.api.amqp.XStreamConverter">
 		<property name="serializer">
 			<bean class="org.axonframework.serializer.xml.XStreamSerializer" />
 		</property>
-	</bean>
+	</bean> -->
 	
 	
 	<!-- tenant user -->
@@ -135,10 +138,11 @@
 		<property name="snapshotterTrigger" ref="cloudSnapshotterTrigger" />
 	</bean>
 	
-	<!-- tenant -->
+	<!-- tenant 
+	<axon:jpa-repository id="esTenantRepository" aggregate-type="com.eits.freemr.configuration.domain.tenant.Tenant" event-bus="eventBus"/>-->
 	<axon:aggregate-command-handler id="tenantCommandHandler" command-bus="commandBus" aggregate-type="com.eits.freemr.configuration.domain.tenant.Tenant"
 		repository="esTenantRepository" />
-
+		
 	<bean id="tenantSnapshotterTrigger" class="org.axonframework.eventsourcing.EventCountSnapshotterTrigger">
 		<property name="snapshotter" ref="snapshotter" />
 	</bean>
@@ -152,5 +156,5 @@
 		<constructor-arg index="1" ref="eventStore" />
 		<property name="snapshotterTrigger" ref="tenantSnapshotterTrigger" />
 	</bean>
-
+	
 </beans>
